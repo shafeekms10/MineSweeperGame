@@ -132,3 +132,74 @@ int Game::count_neighbor_mines(int rows, int columns) {
     }
     return count;
 }
+
+// 21/ENG/091 - N.Mathuwanthi
+void Game::play() {
+    mines_place();
+
+    while (true) {
+        display();
+        cout << "\nFlags remaining : " << flags_count << endl;
+        cout << "\nEnter your move in the format - <Row><Column><Operation>\nF for flag and R for reveal (Example - ABF)" << endl;
+        cout << "\nEnter your move : ";
+        string move_inp;
+        cin >> move_inp;
+        transform(move_inp.begin(), move_inp.end(), move_inp.begin(), ::toupper);
+
+        cout<<endl;
+
+        if (move_inp.size() != 3) {
+            cout << "Error : Enter a valid move!" << endl<<endl;
+            continue;
+        }
+
+        int rows = move_inp[0] - 'A';
+        int columns = move_inp[1] - 'A';
+
+        if (rows < 0 || rows >= size_of_grid || columns < 0 || columns >= size_of_grid) {
+            cout << "Error : Enter a valid move!" << endl<<endl;
+            continue;
+        }
+
+        char operation = move_inp[2];
+
+        if (operation == 'F') {
+            place_flag(rows, columns);
+        } else if (operation == 'R') {
+            reveal_loc(rows, columns);
+        } else {
+            cout << "Error : Enter a valid move!" << endl<<endl;
+            continue;
+        }
+        if (is_Win()) {
+            cout << "Victory! You have successfully conquered the game." << endl;
+            break;
+        }
+    }
+}
+
+int main() {
+    int option;
+	do{
+        cout << "---------------------------------------------------------------" << endl;
+        cout<<"\t\t\tMineSweeper"<<endl;
+        cout << "---------------------------------------------------------------" << endl;
+        cout<<"\nSelect The Field Option:\n1. 10-by-10 - 12 Mines\n2. 15-by-15 - 18 Mines\n3. 20-by-20 - 24 Mines"<<endl<<endl;
+        cout<<"Enter Your Choice : ";
+        cin>>option;
+        cout<<endl;
+        if (option == 1) {
+            Game game(10, 12);
+            game.play();
+        } else if (option == 2) {
+            Game game(15, 18);
+            game.play();
+        } else if (option == 3) {
+            Game game(20, 24);
+            game.play();
+        } else {
+            cout << "Error : Select a valid field option!\n" << endl;
+        }
+	}while(option!=4);
+    return 0;
+}
