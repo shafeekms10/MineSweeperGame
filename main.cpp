@@ -68,3 +68,67 @@ void Game::mines_place() {
         }
     }
 }
+
+
+// 21/ENG/016 - B.Anchuthan
+void Game::reveal_loc(int rows, int columns) {
+    if (mines[rows][columns]) {
+        cout << "Mission Failed! You triggered a mine." << endl;
+        display();
+        exit(0);
+    }
+
+    if (field[rows][columns] == 'c') {
+        int neighbor_mines = count_neighbor_mines(rows, columns);
+        if (neighbor_mines == 0) {
+            field[rows][columns] = '.';
+            for (int i = -1; i <= 1; ++i) {
+                for (int j = -1; j <= 1; ++j) {
+                    int new_row = rows + i;
+                    int new_column = columns + j;
+                    if (new_row >= 0 && new_row < size_of_grid && new_column >= 0 && new_column < size_of_grid) {
+                        reveal_loc(new_row, new_column);
+                    }
+                }
+            }
+        } else {
+            field[rows][columns] = '0' + neighbor_mines;
+        }
+    }
+}
+
+void Game::place_flag(int rows, int columns) {
+    if (field[rows][columns] == 'c') {
+        field[rows][columns] = 'F';
+        --flags_count;
+    } else {
+        cout << "Invalid move! Flags can only be placed on covered tiles." << endl<<endl;
+    }
+}
+
+bool Game::is_Win() {
+    for (int i = 0; i < size_of_grid; ++i) {
+        for (int j = 0; j < size_of_grid; ++j) {
+            if (mines[i][j] && field[i][j] != 'F') {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+int Game::count_neighbor_mines(int rows, int columns) {
+    int count = 0;
+    for (int i = -1; i <= 1; ++i) {
+        for (int j = -1; j <= 1; ++j) {
+            int new_row = rows + i;
+            int new_column = columns + j;
+            if (new_row >= 0 && new_row < size_of_grid && new_column >= 0 && new_column < size_of_grid) {
+                if (mines[new_row][new_column]) {
+                    ++count;
+                }
+            }
+        }
+    }
+    return count;
+}
